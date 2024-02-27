@@ -22,7 +22,7 @@
         <div class="auth-box-3">
           <div class="mobile-logo text-center mb-6 lg:hidden block">
             <router-link to="/"
-              ><img src="@/assets/images/logo/logo.svg" alt="" class="mx-auto"
+              ><img src="@/assets/images/logo/epms.png" alt="" class="mx-auto"
             /></router-link>
           </div>
           <div class="text-center 2xl:mb-10 mb-5">

@@ -9,8 +9,8 @@ function guard(to, from, next) {
 const routes = [
   {
     path: "/",
-    name: "Login",
-    component: () => import("@/views/auth/login/index.vue"),
+    name: "login",
+    component: () => import("@/views/auth/login/login2.vue"),
   },
   {
     path: "/login2",
@@ -95,7 +95,7 @@ const routes = [
       {
         path: "home",
         name: "home",
-        component: () => import("@/views/home/index.vue"),
+        component: () => import("@/views/home/project.vue"),
         meta: {
           hide: true,
         },
@@ -635,7 +635,7 @@ router.beforeEach((to, from, next) => {
     words[i] = words[i][0].toUpperCase() + words[i].substr(1);
   }
 
-  document.title = "Dashcode  - " + words;
+  document.title = "EPMS  - " + words;
   next();
 });
 

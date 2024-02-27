@@ -39,7 +39,7 @@
       >
         <div>
           <img
-            src="@/assets/images/logo/logo.svg"
+            src="@/assets/images/logo/epms.png"
             alt=""
             v-if="!this.$store.state.isDark"
           />

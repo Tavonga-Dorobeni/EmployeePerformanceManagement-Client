@@ -43,7 +43,7 @@
           "
         />
         <div class="nav-tools flex items-center lg:space-x-6 space-x-3">
-          <LanguageVue />
+          <!-- <LanguageVue /> -->
           <SwitchDark />
           <Message v-if="window.width > 768" />
           <Notification v-if="window.width > 768" />
@@ -62,7 +62,7 @@ import SwitchDark from "./Navtools/SwitchDark.vue";
 import Mainnav from "./horizental-nav.vue";
 import Icon from "../Icon";
 import SearchModal from "./Navtools/SearchModal.vue";
-import LanguageVue from "./Navtools/Language.vue";
+// import LanguageVue from "./Navtools/Language.vue";
 import Logo from "./Navtools/Logo.vue";
 import MobileLogo from "./Navtools/MobileLogo.vue";
 import window from "@/mixins/window";
@@ -77,7 +77,6 @@ export default {
     SwitchDark,
     Mainnav,
     Icon,
-    LanguageVue,
     SearchModal,
     Logo,
     MobileLogo,

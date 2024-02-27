@@ -15,7 +15,7 @@
       >
         <span
           class="overflow-hidden text-ellipsis whitespace-nowrap w-[85px] block"
-          >Albert Flores</span
+          >Shalom Muleiwa</span
         >
         <span class="text-base inline-block ml-[10px]"
           ><Icon icon="heroicons-outline:chevron-down"></Icon

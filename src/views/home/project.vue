@@ -1,74 +1,97 @@
 <template>
   <div>
-    <Breadcrumb />
+    <!-- <Breadcrumb /> -->
+    <h4 class="pb-5">Dashboard</h4>
     <div class="card-auto space-y-5">
       <div class="grid grid-cols-12 gap-5">
         <div class="lg:col-span-8 col-span-12 space-y-5">
-          <Card>
-            <div class="grid grid-cols-12 gap-5">
-              <div class="xl:col-span-8 col-span-12">
-                <!-- statitces start -->
-                <div
-                  class="grid md:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-3"
-                >
-                  <div
-                    v-for="(item, i) in statistics"
-                    :key="i"
-                    :class="item.bg"
-                    class="rounded-md p-4 bg-opacity-[0.15] dark:bg-opacity-50 text-center"
-                  >
-                    <div
-                      class="mx-auto h-10 w-10 flex flex-col items-center justify-center rounded-full bg-white text-2xl mb-4"
-                      :class="item.text"
-                    >
-                      <Icon :icon="item.icon" />
-                    </div>
-                    <span
-                      class="block text-sm text-slate-600 font-medium dark:text-white mb-1"
-                      >{{ item.title }}</span
-                    >
-                    <span
-                      class="block mb- text-2xl text-slate-900 dark:text-white font-medium"
-                      >{{ item.count }}</span
-                    >
-                  </div>
-                </div>
-              </div>
-              <!-- pie chart start -->
-              <div class="xl:col-span-4 col-span-12">
-                <div class="bg-slate-50 dark:bg-slate-900 rounded-md p-4">
-                  <span class="block dark:text-slate-400 text-sm text-slate-600"
-                    >Progress</span
-                  >
-                  <apexchart
-                    type="donut"
-                    height="113"
-                    :options="
-                      this.$store.state.isDark
-                        ? donutTwoDark.chartOptions
-                        : donutTwo.chartOptions
-                    "
-                    :series="donutTwo.series"
-                  />
-                </div>
-              </div>
-            </div>
-          </Card>
-          <Card title="Deal distribution by stage">
+          <Card title="Employees" noborder>
             <template #header>
-              <DropEvent />
+              <SelectMonth />
             </template>
-            <apexchart
-              type="area"
-              height="310"
-              :options="
-                this.$store.state.isDark
-                  ? basicAreaDark.chartOptions
-                  : basicArea.chartOptions
-              "
-              :series="basicArea.series"
-            />
-          </Card>
+            <Teamtable
+          /></Card>
+
+          <div class="grid xl:grid-cols-2 grid-cols-1 gap-5">
+            <!-- to do list -->
+            <Card title="Task list">
+              <template #header>
+                <DropEvent />
+              </template>
+              <ul
+                class="divide-y divide-slate-100 dark:divide-slate-700 -mx-6 -mb-6"
+              >
+                <li
+                  class="flex items-center px-6 space-x-4 py-4"
+                  v-for="item in TodoList"
+                  :key="item.id"
+                >
+                  <div class="flex-none flex space-x-2 items-center">
+                    <Checkbox v-model="item.isDone" />
+                    <div
+                      class="h-8 w-8 rounded-full text-white"
+                      :class="item.isDone ? ' opacity-20' : ' opacity-100'"
+                    >
+                      <img
+                        :src="item.image"
+                        alt=""
+                        class="block w-full h-full object-cover rounded-full"
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class="flex-1 flex"
+                    :class="item.isDone ? 'line-through dark:text-white' : ''"
+                  >
+                    <span class="flex-1 text-sm text-slate-600 dark:text-slate-300">
+                      {{ item.title.slice(0, 20) + '...' }}</span
+                    >
+                    <span class="flex-none space-x-2 text-base text-secondary-500">
+                      <button type="button" v-if="item.isDone === false">
+                        <Icon icon="heroicons-outline:pencil-alt" />
+                      </button>
+                      <button
+                        type="button"
+                        @click="removeTodo(item.id)"
+                        class="transition duration-150 hover:text-danger-500"
+                      >
+                        <Icon icon="heroicons-outline:trash" />
+                      </button>
+                    </span>
+                  </div>
+                </li>
+              </ul>
+            </Card>
+            <!-- active style two -->
+            <Card title="Activity">
+              <template #header>
+                <DropEvent />
+              </template>
+              <ul class="relative pl-2">
+                <li
+                  v-for="(item, i) in trackingParcel.slice(0, 5)"
+                  :key="i"
+                  :class="
+                    item.status === 'ok'
+                      ? 'before:opacity-100'
+                      : ' before:opacity-50'
+                  "
+                  class="border-l-2 border-slate-100 dark:border-slate-700 pb-4 last:border-none pl-[22px] relative before:absolute before:left-[-8px] before:top-[0px] before:rounded-full before:w-4 before:h-4 before:bg-slate-900 dark:before:bg-slate-600 before:leading-[2px] before:content-[url('@/assets/images/all-img/ck.svg')]"
+                >
+                  <div class="p-[10px] relative top-[-20px]">
+                    <h2
+                      class="text-sm font-medium dark:text-slate-400-900 mb-1 text-slate-600"
+                    >
+                      {{ item.title }}
+                    </h2>
+                    <p class="text-xs capitalize dark:text-slate-400">
+                      {{ item.date }}
+                    </p>
+                  </div>
+                </li>
+              </ul>
+            </Card>
+          </div>
         </div>
         <div class="lg:col-span-4 col-span-12 space-y-5">
           <Card title="Notes">
@@ -117,198 +140,6 @@
                       class="block text-xs text-slate-600 dark:text-slate-400"
                       >{{ item.date }}</span
                     >
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </Card>
-        </div>
-      </div>
-
-      <div class="grid xl:grid-cols-3 grid-cols-1 gap-5">
-        <!-- to do list -->
-        <Card title="Task list">
-          <template #header>
-            <DropEvent />
-          </template>
-          <ul
-            class="divide-y divide-slate-100 dark:divide-slate-700 -mx-6 -mb-6"
-          >
-            <li
-              class="flex items-center px-6 space-x-4 py-4"
-              v-for="item in TodoList"
-              :key="item.id"
-            >
-              <div class="flex-none flex space-x-2 items-center">
-                <Checkbox v-model="item.isDone" />
-                <div
-                  class="h-8 w-8 rounded-full text-white"
-                  :class="item.isDone ? ' opacity-20' : ' opacity-100'"
-                >
-                  <img
-                    :src="item.image"
-                    alt=""
-                    class="block w-full h-full object-cover rounded-full"
-                  />
-                </div>
-              </div>
-              <div
-                class="flex-1 flex"
-                :class="item.isDone ? 'line-through dark:text-white' : ''"
-              >
-                <span class="flex-1 text-sm text-slate-600 dark:text-slate-300">
-                  {{ item.title.slice(0, 20) + '...' }}</span
-                >
-                <span class="flex-none space-x-2 text-base text-secondary-500">
-                  <button type="button" v-if="item.isDone === false">
-                    <Icon icon="heroicons-outline:pencil-alt" />
-                  </button>
-                  <button
-                    type="button"
-                    @click="removeTodo(item.id)"
-                    class="transition duration-150 hover:text-danger-500"
-                  >
-                    <Icon icon="heroicons-outline:trash" />
-                  </button>
-                </span>
-              </div>
-            </li>
-          </ul>
-        </Card>
-        <!-- message list -->
-        <Card title="Messages">
-          <template #header>
-            <DropEvent />
-          </template>
-          <ul
-            class="divide-y divide-slate-100 dark:divide-slate-700 -mx-6 -mb-6"
-          >
-            <li v-for="(item, i) in message.slice(0, 5)" :key="i">
-              <router-link
-                to="chat"
-                class="hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-slate-800 text-slate-600 dark:text-slate-300 block w-full px-4 py-3 text-sm mb-2 last:mb-0 cursor-pointer"
-              >
-                <div class="flex text-left">
-                  <div class="flex-none mr-3">
-                    <div
-                      class="h-8 w-8 bg-white dark:bg-slate-700 rounded-full relative"
-                    >
-                      <span
-                        :class="`${
-                          item.active ? 'bg-secondary-500' : 'bg-success-500'
-                        } w-[10px] h-[10px] rounded-full border border-white dark:border-slate-700  inline-block absolute right-0 top-0`"
-                      ></span>
-                      <img
-                        :src="require('@/assets/images/all-img/' + item.image)"
-                        alt=""
-                        class="block w-full h-full object-cover rounded-full border hover:border-white border-transparent"
-                      />
-                    </div>
-                  </div>
-                  <div class="flex-1">
-                    <div
-                      class="text-slate-800 dark:text-slate-300 text-sm font-medium mb-1`"
-                    >
-                      {{ item.title }}
-                    </div>
-                    <div
-                      class="text-xs hover:text-[#68768A] font-normal text-slate-600 dark:text-slate-300"
-                    >
-                      {{ item.desc }}
-                    </div>
-                    <div
-                      class="text-slate-400 dark:text-slate-400 text-xs mt-1"
-                    >
-                      3 min ago
-                    </div>
-                  </div>
-                  <div class="flex-0" v-if="item.hasnotifaction">
-                    <span
-                      class="h-4 w-4 bg-danger-500 border border-white rounded-full text-[10px] flex items-center justify-center text-white"
-                    >
-                      {{ item.notification_count }}
-                    </span>
-                  </div>
-                </div>
-              </router-link>
-            </li>
-          </ul>
-        </Card>
-        <!-- active style two -->
-        <Card title="Activity">
-          <template #header>
-            <DropEvent />
-          </template>
-          <ul class="relative pl-2">
-            <li
-              v-for="(item, i) in trackingParcel.slice(0, 5)"
-              :key="i"
-              :class="
-                item.status === 'ok'
-                  ? 'before:opacity-100'
-                  : ' before:opacity-50'
-              "
-              class="border-l-2 border-slate-100 dark:border-slate-700 pb-4 last:border-none pl-[22px] relative before:absolute before:left-[-8px] before:top-[0px] before:rounded-full before:w-4 before:h-4 before:bg-slate-900 dark:before:bg-slate-600 before:leading-[2px] before:content-[url('@/assets/images/all-img/ck.svg')]"
-            >
-              <div class="p-[10px] relative top-[-20px]">
-                <h2
-                  class="text-sm font-medium dark:text-slate-400-900 mb-1 text-slate-600"
-                >
-                  {{ item.title }}
-                </h2>
-                <p class="text-xs capitalize dark:text-slate-400">
-                  {{ item.date }}
-                </p>
-              </div>
-            </li>
-          </ul>
-        </Card>
-      </div>
-      <div class="grid grid-cols-12 gap-5">
-        <div class="xl:col-span-8 lg:col-span-7 col-span-12">
-          <Card title="Team members" noborder>
-            <template #header>
-              <SelectMonth />
-            </template>
-            <Teamtable
-          /></Card>
-        </div>
-        <div class="xl:col-span-4 lg:col-span-5 col-span-12">
-          <Card title="Files">
-            <template #header>
-              <DropEvent />
-            </template>
-            <ul class="divide-y divide-slate-100 dark:divide-slate-700">
-              <li v-for="(item, i) in files" :key="i" class="block py-[8px]">
-                <div class="flex space-x-2">
-                  <div class="flex-1 flex space-x-2">
-                    <div class="flex-none">
-                      <div class="h-8 w-8">
-                        <img
-                          :src="require('@/assets/images/icon/' + item.img)"
-                          alt=""
-                          class="block w-full h-full object-cover rounded-full border hover:border-white border-transparent"
-                        />
-                      </div>
-                    </div>
-                    <div class="flex-1">
-                      <span
-                        class="block text-slate-600 text-sm dark:text-slate-300"
-                        >{{ item.title }}</span
-                      >
-                      <span
-                        class="block font-normal text-xs text-slate-500 mt-1"
-                        >{{ item.date }}</span
-                      >
-                    </div>
-                  </div>
-                  <div class="flex-none">
-                    <button
-                      type="button"
-                      class="text-xs text-slate-900 dark:text-white"
-                    >
-                      Download
-                    </button>
                   </div>
                 </div>
               </li>

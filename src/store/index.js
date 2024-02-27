@@ -19,7 +19,7 @@ export default createStore({
     theme: "light",
     isOpenSettings: false,
     cWidth: "full",
-    menuLayout: "vertical",
+    menuLayout: "horizontal",
     navbarType: "sticky",
     footerType: "static",
     chartColors: {

@@ -9,7 +9,7 @@
             <div class="mobile-logo text-center mb-6 lg:hidden block">
               <router-link to="/"
                 ><img
-                  src="@/assets/images/logo/logo.svg"
+                  src="@/assets/images/logo/epms.png"
                   alt=""
                   class="mx-auto"
               /></router-link>

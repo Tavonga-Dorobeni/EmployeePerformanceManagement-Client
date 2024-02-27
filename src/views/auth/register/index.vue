@@ -5,7 +5,7 @@
         <div class="max-w-[520px] pt-20 pl-20">
           <router-link to="/">
             <img
-              src="@/assets/images/logo/logo.svg"
+              src="@/assets/images/logo/epms.png"
               alt=""
               class="mb-10"
               v-if="!this.$store.state.isDark"
@@ -41,7 +41,7 @@
             <div class="mobile-logo text-center mb-6 lg:hidden block">
               <router-link to="/"
                 ><img
-                  src="@/assets/images/logo/logo.svg"
+                  src="@/assets/images/logo/epms.png"
                   alt=""
                   class="mx-auto"
               /></router-link>

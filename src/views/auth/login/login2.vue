@@ -9,7 +9,7 @@
             <div class="mobile-logo text-center mb-6 lg:hidden block">
               <router-link to="/"
                 ><img
-                  src="@/assets/images/logo/logo.svg"
+                  src="@/assets/images/logo/epms.png"
                   alt=""
                   class="mx-auto"
               /></router-link>
@@ -17,11 +17,11 @@
             <div class="text-center 2xl:mb-10 mb-4">
               <h4 class="font-medium">Sign in</h4>
               <div class="text-slate-500 dark:text-slate-400 text-base">
-                Sign in to your account to start using Dashcode
+                Sign in to your account to start using EPMS
               </div>
             </div>
             <Signin />
-            <div
+            <!-- <div
               className=" relative border-b-[#9AA2AF] border-opacity-[16%] border-b pt-6"
             >
               <div
@@ -43,10 +43,10 @@
               >
                 Sign up</router-link
               >
-            </div>
+            </div> -->
           </div>
           <div class="auth-footer text-center">
-            Copyright 2021, Dashcode All Rights Reserved.
+            Copyright 2021, EPMS All Rights Reserved.
           </div>
         </div>
       </div>
@@ -54,14 +54,14 @@
         class="left-column bg-cover bg-no-repeat bg-center"
         :style="{
           backgroundImage:
-            'url(' + require('@/assets/images/all-img/login-bg.png') + ')',
+            'url(' + require('@/assets/images/all-img/epms.jpeg') + ')',
         }"
       >
         <div class="flex flex-col h-full justify-center">
           <div class="flex-1 flex flex-col justify-center items-center">
             <router-link to="/">
               <img
-                src="@/assets/images/logo/logo-white.svg"
+                src="@/assets/images/logo/epms-white.png"
                 alt=""
                 class="mb-10"
               />
@@ -71,8 +71,8 @@
             <div
               class="black-500-title max-w-[525px] mx-auto pb-20 text-center"
             >
-              Unlock your Project
-              <span class="text-white font-bold">performance</span>
+              Employee Performance Management System
+              <!-- <span class="text-white font-bold">performance</span> -->
             </div>
           </div>
         </div>

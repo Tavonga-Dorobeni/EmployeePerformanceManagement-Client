@@ -23,7 +23,7 @@
           v-if="!this.$store.state.sidebarCollasp"
         >
           <img
-            src="@/assets/images/logo/logo.svg"
+            src="@/assets/images/logo/epms.png"
             alt=""
             v-if="!this.$store.state.isDark && !this.$store.state.semidark"
           />

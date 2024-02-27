@@ -166,7 +166,7 @@ export default {
       teamtable: [
         {
           customer: {
-            name: "Arlene McCoy",
+            name: "Shalom Muleiwa",
             image: require("@/assets/images/users/user-1.jpg"),
             deg: "Ux designer",
           },
@@ -176,7 +176,7 @@ export default {
         },
         {
           customer: {
-            name: "Arlene McCoy",
+            name: "Robson Huruwa",
             image: require("@/assets/images/users/user-2.jpg"),
             deg: "Ux designer",
           },
@@ -186,7 +186,7 @@ export default {
         },
         {
           customer: {
-            name: "Arlene McCoy",
+            name: "Primrose Ruwa",
             image: require("@/assets/images/users/user-3.jpg"),
             deg: "Ux designer",
           },
@@ -196,7 +196,7 @@ export default {
         },
         {
           customer: {
-            name: "Arlene McCoy",
+            name: "Lovejoy Piyo",
             image: require("@/assets/images/users/user-4.jpg"),
             deg: "Ux designer",
           },
@@ -212,7 +212,7 @@ export default {
         },
 
         {
-          label: "Amount",
+          label: "Tasks",
           field: "status",
         },
         {
