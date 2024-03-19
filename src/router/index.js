@@ -591,6 +591,14 @@ const routes = [
           hide: true,
         },
       },
+      {
+        path: "employees",
+        name: "employees",
+        component: () => import("@/views/app/employees"),
+        meta: {
+          hide: true,
+        },
+      },
     ],
   },
   {

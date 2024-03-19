@@ -78,10 +78,10 @@ const app = createApp({
   mounted () {
     if(this.$store.state.auth.status.loggedIn){
       Promise.all([
-        this.$store.dispatch('getAllSections'),
-        this.$store.dispatch('getAllToolTypes'),
-        this.$store.dispatch('getAllTools'),
-        this.$store.dispatch('getAllLocations'),
+        this.$store.dispatch('getAllEmployees'),
+        this.$store.dispatch('getAllSites'),
+        this.$store.dispatch('getAllSkills'),
+        this.$store.dispatch('getAllTasks'),
         this.$store.dispatch('getAllusers'),
       ]).finally(() => {
         this.$root.$emit("Initialised")

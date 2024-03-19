@@ -42,6 +42,13 @@ export const menuItems = [
     link: "users",
     roles:["ROLE_APPLICANT", "ROLE_RECRUITER"],
   },
+
+  {
+    title: "Employees",
+    icon: "heroicons-outline:users",
+    link: "employees",
+    roles:["ROLE_APPLICANT", "ROLE_RECRUITER"],
+  },
   
   {
     title: "Chat",
@@ -545,6 +552,12 @@ export const topMenu = [
     title: "Users",
     icon: "heroicons-outline:users",
     link: "users",
+    roles:["ROLE_APPLICANT", "ROLE_RECRUITER"],
+  },
+  {
+    title: "Employees",
+    icon: "heroicons-outline:users",
+    link: "employees",
     roles:["ROLE_APPLICANT", "ROLE_RECRUITER"],
   },
   {

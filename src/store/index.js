@@ -6,6 +6,10 @@ import project from "./app/project";
 import apptodo from "./app/todo";
 import auth from "./app/auth";
 import user from "./app/user";
+import employee from "./app/employee";
+import task from "./app/task";
+import skill from "./app/skill";
+import site from "./app/site";
 
 export default createStore({
   state: {
@@ -86,5 +90,9 @@ export default createStore({
     chat,
     auth,
     user,
+    employee,
+    task,
+    site,
+    skill
   },
 });
