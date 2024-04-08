@@ -85,14 +85,14 @@
       centered sizeClass="max-w-5xl"
     >
       <div class="grid lg:grid-cols-2 grid-cols-1 gap-5">
-        <Textinput
+        <!-- <Textinput
           label="Employee Number"
           type="text"
           v-model="currentEmployee.EmployeeID"
           placeholder="------"
           name="employee_number"
           isReadonly="true"
-        />
+        /> -->
         <VueSelect v-if="!view" label="Site"
           ><vSelect :options="sites.map(s => s.Name)" v-model="currentEmployee.Site"
         /></VueSelect>
@@ -153,7 +153,7 @@
           v-model="currentEmployee.Latitude"
           placeholder="Enter Latitude"
           name="latitude"
-          :isReadonly="view"
+          isReadonly
         />
         <Textinput
           label="Longitude"
@@ -161,7 +161,7 @@
           v-model="currentEmployee.Longitude"
           placeholder="Enter Longitude"
           name="longitude"
-          :isReadonly="view"
+          isReadonly
         />
       </div>
 
@@ -220,7 +220,8 @@ const actions = ref([
     icon: 'heroicons:eye',
     doit: (data) => {
       data.Site = store.getters.allSites.filter(s => s.SiteID == data.SiteID).map(s => s.Name)[0]
-      data.Skills = data.skills.map(s => store.getters.allSkills.filter(sk => sk.SkillID == s.SkillID).map(sk => sk.Name))
+      data.Skills = data.skills.map(s => store.getters.allSkills.filter(sk => sk.SkillID == s.SkillID).map(sk => sk.Name)[0])
+      console.log(data)
       view.value = true;
       currentEmployee.value = data;
       modal2.value.openModal();
@@ -231,7 +232,8 @@ const actions = ref([
     icon: 'heroicons-outline:pencil-alt',
     doit: (data) => {
       data.Site = store.getters.allSites.filter(s => s.SiteID == data.SiteID).map(s => s.Name)[0]
-      data.Skills = data.skills.map(s => store.getters.allSkills.filter(sk => sk.SkillID == s.SkillID).map(sk => sk.Name)),
+      data.Skills = data.skills.map(s => store.getters.allSkills.filter(sk => sk.SkillID == s.SkillID).map(sk => sk.Name)[0]),
+      console.log(data)
       view.value = false;
       currentEmployee.value = data;
       modal2.value.openModal();

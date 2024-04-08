@@ -1,7 +1,6 @@
 <template>
   <div>
     <Modal
-      :activeModal="store.state.section.addmodal"
       @close="closeModal"
       title="Create Section"
       centered

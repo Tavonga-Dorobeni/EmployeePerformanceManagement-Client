@@ -2,7 +2,7 @@
   <div>
     <Card noborder>
       <Modal
-        title="Edit Tool"
+        title="Edit Task"
         label=""
         labelClass="btn-small"
         ref="modal2"
@@ -10,65 +10,42 @@
       >
         <div class="grid lg:grid-cols-2 grid-cols-1 gap-5">
           <Textinput
-            label="Serial Number"
+            label="Description"
             type="text"
-            v-model="currentTool.SerialNumber"
-            placeholder="Enter Serial Number"
-            name="serial_number"
+            v-model="currentTask.Description"
+            placeholder="Enter Description"
+            name="desc"
             :isReadonly="view"
           />
-          <VueSelect v-if="!view" label="Tool type"
-            ><vSelect :options="allToolTypes.map(o => o.Description)" v-model="currentTool.ToolType"
+          <VueSelect v-if="!view" label="Site"
+            ><vSelect :options="allSites.map(s => s.Name)" v-model="currentTask.Site"
           /></VueSelect>
           <Textinput
             v-else
-            label="Tool type"
+            label="Site"
             type="text"
-            v-model="currentTool.ToolType"
-            name="tool_type"
+            :modelValue="currentTask.Site"
+            name="site"
             isReadonly="true"
           />
-          <VueSelect v-if="!view" label="Section"
-            ><vSelect :options="allSections.map(o => o.Description)" v-model="currentTool.Section"
-          /></VueSelect>
-          <Textinput
-            v-else
-            label="Section"
-            type="text"
-            v-model="currentTool.Section"
-            name="section"
-            isReadonly="true"
-          />
-          <VueSelect v-if="!view" label="Location"
-            ><vSelect :options="allLocations.map(o => o.Description)" v-model="currentTool.Location"
-          /></VueSelect>
-          <Textinput
-            v-else
-            label="Location"
-            type="text"
-            v-model="currentTool.Location"
-            name="location"
-            isReadonly="true"
-          />
-          <Textinput
-            label="Range"
-            type="text"
-            v-model="currentTool.Range"
-            placeholder="Enter Range"
-            name="range"
-            :isReadonly="view"
-          />
-          <Textinput
-            label="Notification Timeline"
-            type="number"
-            v-model="currentTool.NotificationTimeline"
-            placeholder="How many days before next callibration do you want to be notified?"
-            name="timeline"
-            :isReadonly="view"
-          />
-          <FromGroup v-if="!view" label="Last Calibration" name="d1">
+        </div>
+
+        <VueSelect v-if="!view" label="Skills"
+          ><vSelect :options="allSkills.map(s => s.Name)" v-model="currentTask.Skills" multiple
+        /></VueSelect>
+        <Textinput
+          v-else
+          label="Skills"
+          type="text"
+          :modelValue="currentTask.Skills"
+          name="skills"
+          isReadonly="true"
+        />
+
+        <div class="grid lg:grid-cols-2 grid-cols-1 gap-5">
+          <FromGroup v-if="!view" label="Start Date" name="d1">
             <flat-pickr
-              v-model="currentTool.LastCallibration"
+              v-model="currentTask.StartDate"
               class="form-control"
               id="d1"
               placeholder="yyyy, dd M"
@@ -76,24 +53,27 @@
           </FromGroup>
           <Textinput
             v-else
-            label="Last Calibration"
-            :modelValue="currentTool.LastCallibration.substring(0, 10)"
-            name="last_cal"
+            label="Start Date"
+            type="text"
+            :modelValue="currentTask.StartDate"
+            name="s_date"
             isReadonly="true"
           />
-          <FromGroup v-if="!view" label="Next Calibration" name="d1">
+
+          <FromGroup v-if="!view" label="End Date" name="d2">
             <flat-pickr
-              v-model="currentTool.NextCallibration"
+              v-model="currentTask.EndDate"
               class="form-control"
-              id="d1"
+              id="d2"
               placeholder="yyyy, dd M"
             />
           </FromGroup>
           <Textinput
             v-else
-            label="Next Calibration"
-            :modelValue="currentTool.NextCallibration.substring(0, 10)"
-            name="next_cal"
+            label="End Date"
+            type="text"
+            :modelValue="currentTask.EndDate"
+            name="e_date"
             isReadonly="true"
           />
         </div>
@@ -102,7 +82,7 @@
           <Button
             text="Submit"
             btnClass="btn-dark "
-            @click="updateTool()"
+            @click="updateTask()"
           />
         </template>
         <template v-else v-slot:footer>
@@ -117,7 +97,7 @@
       <div
         class="md:flex pb-6 md:space-y-0 space-y-3 justify-between items-center"
       >
-        <h6>Tools List</h6>
+        <h6>Tasks List</h6>
         <InputGroup
           v-model="searchTerm"
           placeholder="Search"
@@ -130,7 +110,7 @@
         class="-mx-6"
         :columns="columns"
         styleClass=" vgt-table  table-head   v-middle striped lesspadding2 listview"
-        :rows="this.$store.state.tool.tools"
+        :rows="this.$store.state.task.tasks"
         :pagination-options="{
           enabled: true,
           perPage: perpage,
@@ -144,64 +124,60 @@
         }"
       >
         <template v-slot:table-row="props">
-          <span v-if="props.column.field == 'SerialNumber'">
+          <span v-if="props.column.field == 'Description'">
             <div class="flex space-x-3 items-center text-left">
               <div class="flex-none">
                 <div
                   class="h-10 w-10 rounded-full text-sm bg-[#E0EAFF] dark:bg-slate-700 flex flex-col items-center justify-center font-medium -tracking-[1px]"
                 >
-                  {{
-                    props.row.SerialNumber.charAt(0) +
-                    props.row.SerialNumber.charAt(props.row.SerialNumber.length - 1)
-                  }}
+                  TK
                 </div>
               </div>
               <div
                 class="flex-1 font-medium text-sm leading-4 whitespace-nowrap"
               >
-                {{
-                  props.row.SerialNumber.length > 20
-                    ? props.row.SerialNumber.substring(0, 20) + '...'
-                    : props.row.SerialNumber
-                }}
+                {{ props.row.Description }}
               </div>
             </div>
-          </span>
-          <span
-            v-if="props.column.field == 'ToolTypeID'"
-            class="text-slate-500 dark:text-slate-400 block min-w-[108px]"
-          >
-            {{ allToolTypes.filter(t => t.ToolTypeID == props.row.ToolTypeID).map(t => t.Description)[0] }}
-          </span>
-          <span
-            v-if="props.column.field == 'SectionID'"
-            class="text-slate-500 dark:text-slate-400 block min-w-[108px]"
-          >
-            {{ allSections.filter(t => t.SectionID == props.row.SectionID).map(t => t.Description)[0] }}
-          </span>
-          <span
-            v-if="props.column.field == 'NextCallibration'"
-            class="text-slate-500 dark:text-slate-400 block min-w-[108px]"
-          >
-            {{ props.row.NextCallibration.substring(0, 10) }}
           </span>
           <span
             v-if="props.column.field == 'Status'"
             class="text-slate-500 dark:text-slate-400 block min-w-[108px]"
           >
             <span
-              v-if="props.row.Status == 'Due'"
-              class="inline-block text-center space-x-1 bg-danger-500 bg-opacity-[0.16] min-w-[110px] text-danger-500 text-xs font-normal px-2 py-1 rounded-full"
+              v-if="props.row.Status == 'Pending' || props.row.Status == 'Assigned'"
+              class="inline-block text-center space-x-1 bg-warning-500 bg-opacity-[0.16] min-w-[110px] text-warning-500 text-xs font-normal px-2 py-1 rounded-full my-3 mr-2"
             >
               {{ props.row.Status}}
             </span>
             <span
-              v-else
-              class="inline-block text-center space-x-1 bg-success-500 bg-opacity-[0.16] min-w-[110px] text-success-500 text-xs font-normal px-2 py-1 rounded-full"
+              v-if="props.row.Status == 'Completed'"
+              class="inline-block text-center space-x-1 bg-success-500 bg-opacity-[0.16] min-w-[110px] text-success-500 text-xs font-normal px-2 py-1 rounded-full my-3 mr-2"
+            >
+              {{ props.row.Status}}
+            </span>
+            <span
+              v-if="props.row.Status == 'Overdue'"
+              class="inline-block text-center space-x-1 bg-error-500 bg-opacity-[0.16] min-w-[110px] text-error-500 text-xs font-normal px-2 py-1 rounded-full my-3 mr-2"
             >
               {{ props.row.Status}}
             </span>
           </span>
+
+          <span
+            v-if="props.column.field == 'StartDate'"
+            class="text-slate-500 dark:text-slate-400 block min-w-[108px]"
+          >
+            {{ props.row.StartDate }}
+          </span>
+
+          <span
+            v-if="props.column.field == 'EndDate'"
+            class="text-slate-500 dark:text-slate-400 block min-w-[108px]"
+          >
+            {{ props.row.EndDate }}
+          </span>
+
           <div
             v-if="props.column.field == 'action'"
             class="action-btn text-end mr-3"
@@ -234,7 +210,7 @@
         <template #pagination-bottom="props">
           <div class="py-4 px-3 justify-center flex">
             <Pagination
-              :total="$store.state.tool.tools.length"
+              :total="$store.state.task.tasks.length"
               :current="current"
               :per-page="perpage"
               :pageRange="pageRange"
@@ -290,18 +266,18 @@ export default {
       perpage: 10,
       pageRange: 10,
       view: false,
-      currentTool: {},
+      currentTask: {},
       searchTerm: "",
       actions: [
         {
           name: 'view',
           icon: 'heroicons:eye',
           doit: (data) => {
-            data.ToolType = this.allToolTypes.filter(s => s.ToolTypeID == data.ToolTypeID).map(s => s.Description)[0]
-            data.Section = this.allSections.filter(s => s.SectionID == data.SectionID).map(s => s.Description)[0]
-            data.Location = this.allLocations.filter(s => s.LocationID == data.LocationID).map(s => s.Description)[0]
+            data.Site = this.allSites.filter(s => s.SiteID == data.SiteID).map(s => s.Name)[0];
+            data.Skills = this.allSkills.filter(s => data.skills.map(sk => sk.SkillID).includes(s.SkillID)).map(s => s.Name);
+
             this.view = true;
-            this.currentTool = data;
+            this.currentTask = data;
             this.$refs.modal2.openModal();
           },
         },
@@ -309,20 +285,12 @@ export default {
           name: 'edit',
           icon: 'heroicons:pencil-square',
           doit: (data) => {
-            data.ToolType = this.allToolTypes.filter(s => s.ToolTypeID == data.ToolTypeID).map(s => s.Description)[0]
-            data.Section = this.allSections.filter(s => s.SectionID == data.SectionID).map(s => s.Description)[0]
-            data.Location = this.allLocations.filter(s => s.LocationID == data.LocationID).map(s => s.Description)[0]
+            data.Site = this.allSites.filter(s => s.SiteID == data.SiteID).map(s => s.Name)[0];
+            data.Skills = this.allSkills.filter(s => data.skills.map(sk => sk.SkillID).includes(s.SkillID)).map(s => s.Name);
+
             this.view = false;
-            this.currentTool = data;
+            this.currentTask = data;
             this.$refs.modal2.openModal();
-          },
-        },
-        {
-          name: 'calibrate',
-          icon: 'heroicons-outline:wrench',
-          doit: (data) => {
-            this.$store.commit('setActiveData', data);
-            this.$router.push({ name: 'calibration' });
           },
         },
         {
@@ -330,7 +298,7 @@ export default {
           icon: 'heroicons-outline:trash',
           doit: (data) => {
             const toast = useToast();
-            this.$store.dispatch('deleteTool', data)
+            this.$store.dispatch('deleteTask', data)
             .then(response => {
               toast.success(response.data.message, {
                 timeout: 2000,
@@ -349,27 +317,25 @@ export default {
 
       columns: [
         {
-          label: 'Serial Number',
-          field: 'SerialNumber',
+          label: 'Description',
+          field: 'Description',
         },
 
-        {
-          label: 'Name',
-          field: 'ToolTypeID',
-        },
-
-        {
-          label: 'Section',
-          field: 'SectionID',
-        },
-        {
-          label: 'Next Calibration',
-          field: 'NextCallibration',
-        },
         {
           label: 'Status',
-          field: 'Status'
+          field: 'Status',
         },
+
+        {
+          label: 'Start Date',
+          field: 'StartDate',
+        },
+
+        {
+          label: 'End Date',
+          field: 'EndDate',
+        },
+
         {
           label: 'Action',
           field: 'action',
@@ -380,20 +346,20 @@ export default {
 
   computed: {
     ...mapGetters([
-      "allSections",
-      "allToolTypes",
-      "allLocations",
-      "activeData"
+      "activeData",
+      "allTasks",
+      "allSites",
+      "allSkills"
     ])
   },
 
   methods: {
-    updateTool(){
+    updateTask(){
       const toast = useToast();
-      this.currentTool.SectionID = this.allSections.filter(s => s.Description == this.currentTool.Section).map(s => s.SectionID)[0]
-      this.currentTool.ToolTypeID = this.allToolTypes.filter(s => s.Description == this.currentTool.ToolType).map(s => s.ToolTypeID)[0]
-      this.currentTool.LocationID = this.allLocations.filter(s => s.Description == this.currentTool.Location).map(s => s.LocationID)[0]
-      this.$store.dispatch('updateTool', this.currentTool)
+      this.currentTask.SiteID = this.allSites.filter(s => s.Name == this.currentTask.Site).map(s => s.SiteID)[0]
+      this.currentTask.skills = this.allSkills.filter(s => this.currentTask.Skills.includes(s.Name)).map(sk => sk.SkillID)
+
+      this.$store.dispatch('updateTask', this.currentTask)
       .then(response => {
         this.$refs.modal2.closeModal();
         toast.success(response.data.message, {

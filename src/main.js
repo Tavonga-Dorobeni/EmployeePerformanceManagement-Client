@@ -23,6 +23,8 @@ import store from "./store";
 import VCalendar from "v-calendar";
 import "v-calendar/dist/style.css";
 import {emitter} from './mitt';
+import "leaflet/dist/leaflet.css";
+import "leaflet-geosearch/dist/geosearch.css";
 
 // window.emitter = emitter;
 

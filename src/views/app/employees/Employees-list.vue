@@ -9,14 +9,14 @@
         centered sizeClass="max-w-5xl"
       >
         <div class="grid lg:grid-cols-2 grid-cols-1 gap-5">
-          <Textinput
+          <!-- <Textinput
             label="Employee Number"
             type="text"
             v-model="currentEmployee.EmployeeID"
             placeholder="------"
             name="employee_number"
             isReadonly="true"
-          />
+          /> -->
           <VueSelect v-if="!view" label="Site"
             ><vSelect :options="allSites.map(s => s.Name)" v-model="currentEmployee.Site"
           /></VueSelect>
@@ -77,7 +77,7 @@
             v-model="currentEmployee.Latitude"
             placeholder="Enter Latitude"
             name="latitude"
-            :isReadonly="view"
+            isReadonly
           />
           <Textinput
             label="Longitude"
@@ -85,7 +85,7 @@
             v-model="currentEmployee.Longitude"
             placeholder="Enter Longitude"
             name="longitude"
-            :isReadonly="view"
+            isReadonly
           />
         </div>
 

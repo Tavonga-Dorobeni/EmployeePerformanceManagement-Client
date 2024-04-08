@@ -91,6 +91,7 @@
                 v-model="employee.Latitude"
                 placeholder="Enter Latitude"
                 name="latitude"
+                isReadonly
               />
               <Textinput
                 label="Longitude"
@@ -98,6 +99,7 @@
                 v-model="employee.Longitude"
                 placeholder="Enter Longitude"
                 name="longitude"
+                isReadonly
               />
             </div>
           </form>
@@ -184,7 +186,7 @@ setTimeout(() => {
 const toast = useToast();
 const handleNew = (new_employee) => {
   new_employee.SiteID = store.getters.allSites.filter(s => s.Name == new_employee.Site).map(s => s.SiteID)[0]
-  new_employee.skills = new_employee.Skills.map(s => store.getters.allSites.filter(sk => sk.Name == s.Name).map(sk => ({SkillID: sk.SkillID})))
+  new_employee.skills = store.getters.allSkills.filter(s => new_employee.Skills.includes(s.Name)).map(s => s.SkillID)
 
   const data = {
     employee: new_employee,

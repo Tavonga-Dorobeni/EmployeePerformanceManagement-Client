@@ -599,6 +599,30 @@ const routes = [
           hide: true,
         },
       },
+      {
+        path: "tasks",
+        name: "tasks",
+        component: () => import("@/views/app/tasks"),
+        meta: {
+          hide: true,
+        },
+      },
+      {
+        path: "skills",
+        name: "skills",
+        component: () => import("@/views/app/skills"),
+        meta: {
+          hide: true,
+        },
+      },
+      {
+        path: "sites",
+        name: "sites",
+        component: () => import("@/views/app/sites"),
+        meta: {
+          hide: true,
+        },
+      },
     ],
   },
   {
