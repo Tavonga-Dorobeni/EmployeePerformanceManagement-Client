@@ -40,7 +40,7 @@
           ref="modal2"
           centered sizeClass="max-w-5xl"
         >
-          <form class="space-y-4">
+          <form v-if="!assigned && !emptyPool" class="space-y-4">
             <div class="grid lg:grid-cols-2 grid-cols-1 gap-5">
               <Textinput
                 label="Description"
@@ -77,11 +77,63 @@
               </FromGroup>
             </div>
           </form>
+
+          <form v-if="assigned && !emptyPool" style="height: 350px;">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 10px;">
+              <div class="grid lg:grid-cols-2 grid-cols-1 gap-5">
+                <span class="pt-12 mt-6">
+                  <div class="text-xl font-medium text-slate-900 mb-2">
+                    Assignment Complete
+                  </div>
+                  <b class="text-sm text-slate-800">Assigned to: {{ employees.filter(e => e.EmployeeID == assignmentDetails?.EmployeeID).map(e => e.FullName)[0] }}</b>      
+                  <p class="text-sm text-slate-800">Overlapping tasks: {{ assignmentDetails?.overlappingTasksCount }}</p>
+                  <p class="text-sm text-slate-800">Matching skills:</p>
+                  <span
+                  v-for="(item, i) in skills.filter(s => assignmentDetails.matchingSkills?.includes(s.SkillID))" :key="i"
+                    class="inline-block text-center space-x-1 bg-success-500 bg-opacity-[0.16] min-w-[110px] text-success-500 text-xs font-normal px-2 py-1 rounded-full my-3 mr-2"
+                  >
+                    {{ item.Name}}
+                  </span>
+                </span>
+                <span>
+                  <img
+                    src="@/assets/images/all-img/verified.png"
+                    alt=""
+                    class="mt-10 object-cover rounded-full"
+                  />
+                </span>          
+              </div>
+            </div>
+          </form>
+
+          <form v-if="!assigned && emptyPool" style="height: 350px;">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 10px;">
+              <span class="pt-12">
+                <img
+                  src="@/assets/images/all-img/flagged.jpg"
+                  alt=""
+                  class="mt-10 ml-2"
+                  style="height: 150px;"
+                />
+                <div class="text-xl font-medium text-slate-900 mb-2 text-center">
+                  There are no employees that match the task requirements!
+                </div>
+              </span>          
+            </div>
+          </form>
           <template v-slot:footer>
             <Button
+              v-if="!assigned && !emptyPool"
               text="Submit"
               btnClass="btn-dark "
-              @click="handleNew(task); $refs.modal2.closeModal()"
+              @click="handleNew(task)"
+            />
+
+            <Button
+              v-else
+              text="Okay"
+              btnClass="btn-dark "
+              @click="close()"
             />
           </template>
         </Modal>
@@ -124,7 +176,11 @@ const openTask = () => {
   store.dispatch("openTask");
 };
 
-let task = {};
+let task = ref({});
+const modal2 = ref(null)
+let assigned = ref(false);
+let emptyPool = ref(false);
+let assignmentDetails = ref(null)
 
 const width = ref(0);
 const handleResize = () => {
@@ -150,6 +206,7 @@ onMounted(() => {
 const tasks = computed(() => store.getters.allTasks);
 const sites = computed(() => store.getters.allSites);
 const skills = computed(() => store.getters.allSkills);
+const employees = computed(() => store.getters.allEmployees);
 
 const isSkeletion = ref(true);
 const isSkeletion2 = ref(null);
@@ -163,9 +220,31 @@ const handleNew = (new_task) => {
   new_task.SiteID = store.getters.allSites.filter(s => s.Name == new_task.Site).map(s => s.SiteID)[0]
   new_task.Status = "Pending"
 
+  let taskSkills = store.getters.allSkills.filter(s => new_task.Skills.includes(s.Name)).map(s => s.SkillID)
+  let employeePool = store.getters.allEmployees.filter(e => e.skills.map(s => s.SkillID).some(el => taskSkills.includes(el)) && e.SiteID == new_task.SiteID)
+  let sortedPool = []
+
+  if(employeePool.length > 0){
+    for(let i = 0; i < employeePool.length; i++){
+      let matchingSkills = employeePool[i].skills.map(s => s.SkillID).filter(sk => taskSkills.includes(sk))
+      let overlappingTasks = employeePool[i].tasks.map(t => store.getters.allTasks.filter(ts => ts.TaskID == t.TaskID)[0]).filter(t => new Date(new_task.StartDate?.substring(0, 10)).getTime() <= new Date(t.EndDate?.substring(0, 10)).getTime() && new Date(new_task.EndDate?.substring(0, 10)).getTime() >= new Date(t.StartDate?.substring(0, 10)).getTime())
+
+      employeePool[i].matchingSkillsCount = matchingSkills.length
+      employeePool[i].overlappingTasksCount = overlappingTasks.length
+      employeePool[i].matchingSkills = matchingSkills
+    }
+
+    sortedPool = employeePool.sort((e1, e2) => (e1.overlappingTasksCount > e2.overlappingTasksCount) ? 1 : (e1.overlappingTasksCount < e2.overlappingTasksCount) ? -1 : 0);
+
+    if(sortedPool.length > 0){
+      new_task.EmployeeID = sortedPool[0].EmployeeID
+      new_task.Status = 'Assigned'
+    }    
+  }
+
   const data = {
     task: new_task,
-    skills: store.getters.allSkills.filter(s => new_task.Skills.includes(s.Name)).map(s => s.SkillID)
+    skills: taskSkills
   }
 
   store.dispatch("createTask", data)
@@ -173,7 +252,15 @@ const handleNew = (new_task) => {
     // use vue-toast-notification app use
     toast.success(data.data.message, {
         timeout: 2000,
-      });          
+      });
+    if(new_task.Status == 'Assigned'){
+      console.log(data)
+      store.dispatch('updateEmployee', {EmployeeID: data.data.task.EmployeeID, new_task: data.data.task})
+      assignmentDetails.value = sortedPool[0]
+      assigned.value = true
+    } else {
+      emptyPool.value = true
+    }
   },
   error => {
     toast.error((error.response && error.response.data) ||
@@ -182,6 +269,12 @@ const handleNew = (new_task) => {
         timeout: 2000,
       });   
   })
+}
+
+const close = () => {
+  assigned.value = false
+  emptyPool.value = false
+  modal2.value.closeModal();
 }
 
 // watch fillter with switch case

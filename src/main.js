@@ -25,6 +25,11 @@ import "v-calendar/dist/style.css";
 import {emitter} from './mitt';
 import "leaflet/dist/leaflet.css";
 import "leaflet-geosearch/dist/geosearch.css";
+import VueSocketIOExt from 'vue-socket.io-extended';
+import io from "socket.io-client";
+
+const socket = io('http://localhost:8080');
+// const socket = io('https://medicalinsurancefraudprevention-server.onrender.com');
 
 // window.emitter = emitter;
 
@@ -105,5 +110,6 @@ const app = createApp({
   app.use(VueGoodTablePlugin)
   app.use(VueApexCharts)
   app.use(VCalendar)
+  app.use(VueSocketIOExt, socket);
   app.config.globalProperties.$emitter = emitter
   app.mount("#app");

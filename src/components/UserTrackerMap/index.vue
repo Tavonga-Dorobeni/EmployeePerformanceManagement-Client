@@ -1,7 +1,6 @@
 <template>
   <l-map
     ref="map"
-    @click="onMapClick"
     :zoom="zoom"
     maxZoom="18"
     :center="[
@@ -14,16 +13,19 @@
       :attribution="tileProvider.attribution"
     />
     <l-marker
-      v-if="position?.lat && position?.lng"
+      v-for="(item, i) in markers" :key="i"
       visible
       :draggable="draggable"
       :icon="icon"
-      :lat-lng.sync="position"
-      @dragstart="dragging = true"
-      @dragend="dragging = false"
+      :lat-lng.sync="{lat: item.Latitude, lng: item.Longitude}"
     >
-      <l-tooltip :content="tooltipContent" :options="{ permanent: true }" />
+      <l-tooltip :content="item.FullName" :options="{ permanent: true }" />
     </l-marker>
+    <l-circle
+      v-for="(item, i) in allSites" :key="i"
+      :lat-lng="{lat: item.Latitude, lng: item.Longitude}"
+      :radius="250"
+    />
   </l-map>
 </template>
 <script>
@@ -32,16 +34,26 @@ import {
   LMap,
   LMarker,
   LTileLayer,
-  LTooltip
+  LTooltip,
+  LCircle
 } from "@vue-leaflet/vue-leaflet";
 import { icon } from "leaflet";
 import {parse, stringify} from 'flatted';
+import { mapGetters } from 'vuex';
+import * as Ably from "ably";
+
+var ably = new Ably.Realtime({
+  key: "tBnWQA.2fp5mg:6qVhXVi2HJ9Dx5fw5N2szmQe-cRG1O905x0paJzWohc",
+  clientId: `${Math.random() * 1000000}`
+});
+
 export default {
   components: {
     LMap,
     LTileLayer,
     LMarker,
     LTooltip,
+    LCircle
   },
   props: {
      value: {
@@ -51,8 +63,8 @@ export default {
     defaultLocation: {
       type: Object,
       default: () => ({
-        lat: -17.795235,
-        lng: 31.032725
+        lat: -17.838604385652317,
+        lng: 31.007140874862674
       })
     }
   },
@@ -60,7 +72,9 @@ export default {
     return {
       log: null,
       loading:false,
-      draggable: true,
+      draggable: false,
+      markers: null,
+      userlocation: [],
       userLocation: {},
       icon: icon({
         iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
@@ -74,29 +88,37 @@ export default {
           '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
         url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       },
-      zoom: 18,
+      zoom: 16,
       dragging:false
     };
   },
+
   mounted() {
     this.getUserPosition();
-    this.$emitter.on('setPosition', (data) => {
-      this.position = data
+    this.$emitter.on('addMarker', (data) => {
+      this.markers.unshift(data)
     })
-    this.$emitter.on('disableDrag', () => {
-      this.draggable = false
-    })
+    // this.$emitter.on('disableDrag', () => {
+    //   this.draggable = false
+    // })
   },
+
   watch: {
     position: {
       deep: true,
       async handler(value) {
         this.address = await this.getAddress();
-        this.$emit("input", { position: value, address: this.address });
+        // this.$emit("input", { position: value, address: this.address });
       }
     }
   },
+
   computed: {
+    ...mapGetters([
+      "allEmployees",
+      "allSites"
+    ]),
+
     tooltipContent() {
       if (this.dragging) return "...";
       if (this.loading) return "Loading...";
@@ -108,6 +130,40 @@ export default {
       }<br/> <strong>lng:</strong> ${this.position?.lng}`;
     }
   },
+
+  async created(){
+    this.markers = [...this.allEmployees]
+    var channel = ably.channels.get("EPMS");
+    let self = this;
+    channel.presence.subscribe("update", function(presenceMsg) {
+      console.log(presenceMsg)
+      console.log(
+        "Received a " + presenceMsg.action + " from " + presenceMsg.clientId
+      );
+      channel.presence.get(function(err, members) {
+        console.log(members)
+        
+        self.markers = members.map(mem => {
+          if (JSON.stringify(self.userlocation) == JSON.stringify(mem.data)) {
+            return {
+              ...mem.data,
+              icon: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+            };
+          } else {
+            return {
+              ...mem.data,
+              icon: "http://maps.google.com/mapfiles/ms/icons/red-dot.png"
+            };
+          }
+        });
+        // self.onlineUsers = members;
+        console.log(
+          "There are now " + members.length + " clients present on this channel"
+        );
+      });
+    });
+  },
+  
   methods: {
     async getAddress() {
       this.loading = true;
@@ -129,14 +185,7 @@ export default {
       this.loading = false;
       return address;
     },
-    onMapClick(value) {
-      // place the marker on the clicked spot
-      if(this.draggable){
-        var obj = parse(stringify(value))
-        this.position = obj.latlng;
-        this.$emitter.emit('setLocation', this.position)
-      }
-    },
+
     getUserPosition() {
       if (navigator.geolocation) {
         // get GPS position

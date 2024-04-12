@@ -223,7 +223,8 @@
               v-if="props.column.field == 'load'"
               class="text-slate-500 dark:text-slate-400 block min-w-[108px]"
             >
-              {{ props.row.tasks.filter(t => new Date(t.StartDate.substring(0, 10)) <= new Date(currentTask.EndDate.substring(0, 10)) && new Date(t.EndDate.substring(0, 10)) >= new Date(currentTask.StartDate.substring(0, 10))).length }} Tasks
+              <!-- {{ new Date(currentTask.EndDate.substring(0, 10)).getTime() >= new Date(props.row.tasks[1].StartDate.substring(0, 10)).getTime() }} -->
+              {{ props.row.tasks.map(t => tasks.filter(ts => ts.TaskID == t.TaskID)[0]).filter(t => new Date(currentTask.StartDate?.substring(0, 10)).getTime() <= new Date(t.EndDate?.substring(0, 10)).getTime() && new Date(currentTask.EndDate?.substring(0, 10)).getTime() >= new Date(t.StartDate?.substring(0, 10)).getTime()).length }} Tasks
             </span>
             <div
               v-if="props.column.field == 'action'"
@@ -358,9 +359,13 @@ const assignAction = ref([
       // data.Skills = store.getters.allSkills.filter(s => data.skills.map(sk => sk.SkillID).includes(s.SkillID)).map(s => s.Name)
       // view.value = true;
       // assign.value = false;
+      let currentEmployee = store.getters.allEmployees.filter(e => e.EmployeeID == data.EmployeeID)[0]
+      currentEmployee.new_task = {TaskID: currentTask.value.TaskID}
       currentTask.value.EmployeeID = data.EmployeeID;
       currentTask.value.Status = "Assigned";
-      updateTask();
+      updateTask()
+      console.log(currentEmployee)
+      store.dispatch('updateEmployee', currentEmployee)
       modal2.value.closeModal();
     },
   },

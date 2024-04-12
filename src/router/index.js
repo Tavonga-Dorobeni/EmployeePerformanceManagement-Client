@@ -623,6 +623,14 @@ const routes = [
           hide: true,
         },
       },
+      {
+        path: "tracker",
+        name: "tracker",
+        component: () => import("@/views/app/tracker"),
+        meta: {
+          hide: true,
+        },
+      },
     ],
   },
   {
