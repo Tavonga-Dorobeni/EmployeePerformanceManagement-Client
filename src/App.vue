@@ -125,8 +125,8 @@ export default {
       navigator.geolocation.watchPosition(
         pos => {
           let Employee = this.allEmployees.filter(e => e.FullName.includes(this.currentUser.firstname) && e.FullName.includes(this.currentUser.lastname))
-          this.$store.dispatch('updateEmployee', {EmployeeID: Employee?.EmployeeID, FullName: Employee?.FullName, Latitude: pos.coords.latitude, Latitude: pos.coords.longitude})
-          this.$socket.client.emit('setlocation', {EmployeeID: Employee?.EmployeeID, FullName: Employee?.FullName, Latitude: pos.coords.latitude, Latitude: pos.coords.longitude});
+          this.$store.dispatch('updateEmployee', {EmployeeID: Employee?.EmployeeID, FullName: Employee?.FullName, Latitude: pos.coords.latitude, Longitude: pos.coords.longitude})
+          this.$socket.client.emit('setlocation', {EmployeeID: Employee?.EmployeeID, FullName: Employee?.FullName, Latitude: pos.coords.latitude, Longitude: pos.coords.longitude});
           this.gettingLocation = false;
           this.initialPosition.lat = pos.coords.latitude;
           this.initialPosition.lng = pos.coords.longitude;
