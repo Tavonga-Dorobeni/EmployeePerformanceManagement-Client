@@ -30,6 +30,8 @@
     "dayjs": "^1.11.6",
     "flatted": "^3.3.1",
     "gsap": "^3.11.3",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.8.2",
     "leaflet": "1.9.2",
     "leaflet-geosearch": "^3.11.1",
     "mitt": "3.0.1",

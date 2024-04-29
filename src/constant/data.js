@@ -75,11 +75,11 @@ export const menuItems = [
   //   icon: "heroicons-outline:view-boards",
   //   link: "kanban",
   // },
-  // {
-  //   title: "Calender",
-  //   icon: "heroicons-outline:calendar",
-  //   link: "calender",
-  // },
+  {
+    title: "Calender",
+    icon: "heroicons-outline:calendar",
+    link: "calender",
+  },
 
   // {
   //   title: "Todo",

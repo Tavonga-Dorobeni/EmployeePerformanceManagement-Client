@@ -24,6 +24,25 @@ class TaskDataService {
   deleteAll() {
     return http.delete(`/tasks`, { headers: authHeader() });
   }
+
+  createTaskActivity(data) {
+    return http.post("/task_activities", data, { headers: authHeader() });
+  }
+  getAllTaskActivities() {
+    return http.get("/task_activities", { headers: authHeader() });
+  }
+
+  getTaskActivity(id) {
+    return http.get(`/task_activities/${id}`, { headers: authHeader() });
+  }
+
+  updateTaskActivity(id, data) {
+    return http.put(`/task_activities/${id}`, data, { headers: authHeader() });
+  }
+
+  deleteTaskActivity(id) {
+    return http.delete(`/task_activities/${id}`, { headers: authHeader() });
+  }
 }
 
 export default new TaskDataService();

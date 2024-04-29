@@ -89,6 +89,7 @@ const app = createApp({
         this.$store.dispatch('getAllSites'),
         this.$store.dispatch('getAllSkills'),
         this.$store.dispatch('getAllTasks'),
+        this.$store.dispatch('getAllTaskActivities'),
         this.$store.dispatch('getAllusers'),
       ]).finally(() => {
         this.$root.$emit("Initialised")

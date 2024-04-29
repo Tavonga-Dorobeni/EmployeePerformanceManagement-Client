@@ -3,6 +3,7 @@ import taskService from "../../../services/task.service";
 export default {
   state: {
     tasks: [],
+    taskActivities: []
   },
 
   //********************************************************************GETTERS*****************************************************************************************
@@ -10,6 +11,7 @@ export default {
 
   getters: {
     allTasks: (state) => state.tasks,
+    allTaskActivities: (state) => state.taskActivities,
     // unconfirmedDeposits: (state) => {
     //   return [
     //     state.tasks
@@ -70,6 +72,52 @@ export default {
         }
       );
     },
+
+
+    createTaskActivity({ commit }, data) {
+      return taskService.createTaskActivity(data).then(
+        (response) => {
+          commit("newTaskActivity", response.data);
+          return Promise.resolve(response);
+        },
+        (error) => {
+          return Promise.reject(error);
+        }
+      );
+    },
+    getAllTaskActivities({ commit }) {
+      return taskService.getAllTaskActivities().then(
+        (response) => {
+          commit("setTaskActivities", response.data);
+          return Promise.resolve(response);
+        },
+        (error) => {
+          return Promise.reject(error);
+        }
+      );
+    },
+    updateTaskActivity({ commit }, data) {
+      return taskService.updateTaskActivity(data.TaskActivityID, data).then(
+        (response) => {
+          commit("updTaskActivity", data);
+          return Promise.resolve(response);
+        },
+        (error) => {
+          return Promise.reject(error);
+        }
+      );
+    },
+    deleteTaskActivity({ commit }, data) {
+      return taskService.deleteTaskActivity(data.TaskActivityID).then(
+        (response) => {
+          commit("dltTaskActivity", data);
+          return Promise.resolve(response);
+        },
+        (error) => {
+          return Promise.reject(error);
+        }
+      );
+    },
   },
 
   //********************************************************************MUTATIONS***************************************************************************************
@@ -95,6 +143,27 @@ export default {
       );
       if (index !== -1) {
         state.tasks.splice(index, 1);
+      }
+    },
+
+    setTaskActivities: (state, task_activities) =>
+      (state.taskActivities = task_activities),
+    newTaskActivity: (state, newActivity) =>
+      state.taskActivities.unshift(newActivity.activity),
+    updTaskActivity: (state, updatedActivity) => {
+      const index = state.taskActivities.findIndex(
+        (c) => c.TaskActivityID === updatedActivity.TaskActivityID
+      );
+      if (index !== -1) {
+        state.taskActivities.splice(index, 1, updatedActivity);
+      }
+    },
+    dltTaskActivity: (state, TaskActivity) => {
+      const index = state.taskActivities.findIndex(
+        (c) => c.TaskActivityID === TaskActivity.TaskActivityID
+      );
+      if (index !== -1) {
+        state.taskActivities.splice(index, 1);
       }
     },
   },

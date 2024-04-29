@@ -11,22 +11,26 @@
         labelClass="btn-outline-dark"
         :activeModal="showModal"
         @close="hideModal"
-        title="Event"
+        title="Activity"
       >
         <!-- :validation-schema="schema" -->
         <Form @submit="onSubmit">
           <div class="space-y-3">
+            <VueSelect label="Task"
+              ><vSelect :options="allTasks.map(s => `ID: ${s.TaskID}, ${s.Description}`)" v-model="activity.Task"
+            /></VueSelect>
+            
             <Textinput
-              v-model="event.title"
+              v-model="activity.Activity"
               type="text"
-              label="Event Name"
-              placeholder="Insert Event name"
+              label="Activity Description"
+              placeholder="Insert Activity Description"
             />
 
-            <div class="fromGroup">
+            <!-- <div class="fromGroup">
               <label class="form-label">Category</label>
               <select
-                v-model="event.category"
+                v-model="activity.category"
                 class="form-control"
                 name="category"
               >
@@ -38,7 +42,7 @@
                   {{ option.name }}
                 </option>
               </select>
-            </div>
+            </div> -->
           </div>
           <div class="flex justify-between items-center mt-5">
             <Button
@@ -51,25 +55,28 @@
               text="save"
               btnClass="btn-success"
               type="submit"
-              :isDisabled="!formisValid"
             />
           </div>
         </Form>
       </Modal>
-      <Modal :activeModal="eventModal" @close="closeModal" title="Edit Event">
+      <Modal :activeModal="activityModal" @close="closeModal" title="Edit Activity">
         <Form @submit="editSubmit">
           <div class="space-y-3">
+            <VueSelect label="Task"
+              ><vSelect :options="allTasks.map(s => `ID: ${s.TaskID}, ${s.Description}`)" v-model="editactivity.editTask"
+            /></VueSelect>
+
             <Textinput
-              v-model="editevent.editTitle"
+              v-model="editactivity.editActivity"
               type="text"
-              label="Event Name"
-              placeholder="Insert Event name"
+              label="Activity Description"
+              placeholder="Insert Activity Description"
             />
 
-            <div class="fromGroup">
+            <!-- <div class="fromGroup">
               <label class="form-label">Category</label>
               <select
-                v-model="editevent.editcategory"
+                v-model="editactivity.editcategory"
                 class="form-control"
                 name="category"
               >
@@ -81,7 +88,7 @@
                   {{ option.name }}
                 </option>
               </select>
-            </div>
+            </div> -->
           </div>
           <div class="flex justify-between items-center mt-5">
             <div>
@@ -103,7 +110,6 @@
                 text="save"
                 btnClass="btn-success"
                 @click="editSubmit"
-                :isDisabled="!editformvIsvalid"
               />
             </div>
           </div>
@@ -124,8 +130,12 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
+import VueSelect from "@/components/Select/VueSelect";
+import vSelect from "vue-select";
+import { useToast } from "vue-toastification";
 import { calendarEvents, categories } from "./Initialize-event";
 import { Form } from "vee-validate";
+import { mapGetters } from 'vuex';
 
 export default {
   name: "calander",
@@ -136,13 +146,14 @@ export default {
     Button,
     Form,
     Textinput,
+    VueSelect,
+    vSelect,
   },
 
   data() {
     return {
       title: "Calendar",
       errors: [],
-      calendarEvents: calendarEvents,
       calendarOptions: {
         headerToolbar: {
           left: "prev,next today",
@@ -152,126 +163,171 @@ export default {
         plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin],
         initialView: "dayGridMonth",
         themeSystem: "bootstrap",
-        initialEvents: calendarEvents,
+        events: [],
         editable: true,
         droppable: true,
         eventResizableFromStart: true,
         dateClick: this.dateClicked,
-        eventClick: this.editEvent,
-        eventsSet: this.handleEvents,
+        eventClick: this.editActivity,
+        eventsSet: this.handleActivities,
         weekends: true,
         selectable: true,
         selectMirror: true,
         dayMaxEvents: true,
       },
-      currentEvents: [],
+      currentActivities: [],
       showModal: false,
-      eventModal: false,
+      activityModal: false,
       categories: categories,
       submitted: false,
       submit: false,
-      newEventData: {},
+      newActivityData: {},
       edit: {},
       deleteId: {},
-      event: {
-        title: "",
-        category: "",
+      activity: {
+        Task: "",
+        Activity: "",
       },
-      editevent: {
-        editTitle: "",
-        editcategory: "",
+      editactivity: {
+        editTask: "",
+        editActivity: "",
       },
     };
   },
+
   computed: {
+    ...mapGetters([
+      "allTasks",
+      "allTaskActivities"
+    ]),
+    // calendarEvents() {
+    //   this.calendarEvents = this.allTaskActivities.map(t => ({id: t.TaskActivityID, title: t.Activity, start: t.Date, className: "bg-primary-500 text-white"}))
+    //   return events
+    // },
     titleIsvalid() {
-      return !!this.event.title;
+      return !!this.activity.title;
     },
     categoryIsvalid() {
-      return !!this.event.category;
+      return !!this.activity.category;
     },
     formisValid() {
       return this.titleIsvalid && this.categoryIsvalid;
     },
     editformvIsvalid() {
-      return this.editevent.editTitle && this.editevent.editcategory;
+      return this.editactivity.editTitle && this.editactivity.editcategory;
     },
   },
+
   methods: {
     onSubmit() {
+      const toast = useToast();
       this.submitted = true;
 
-      if (this.formisValid) {
-        const title = this.event.title;
-        const category = this.event.category;
-        let calendarApi = this.newEventData.view.calendar;
+      this.activity.TaskID = this.allTasks.filter(t => this.activity.Task.split(',')[0].includes(t.TaskID)).map(t => t.TaskID)[0]
+      this.activity.Date = this.newActivityData.date
 
-        this.currentEvents = calendarApi.addEvent({
-          id: this.newEventData.length + 1,
-          title,
-          start: this.newEventData.date,
-          end: this.newEventData.date,
-          classNames: [category],
-        });
+      this.$store.dispatch("createTaskActivity", this.activity)
+      .then(data =>{
         this.successmsg();
-
+        this.calendarOptions.events = this.allTaskActivities.map(t => ({id: t.TaskActivityID, task: t.TaskID, title: t.Activity, start: t.Date, className: "bg-primary-500 text-white"}))
         this.showModal = false;
-        this.newEventData = {};
-      }
-      //console.log(this.errors);
+        this.newActivityData = {};
+        // use vue-toast-notification app use
+        toast.success(data.data.message, {
+            timeout: 2000,
+          });          
+      },
+      error => {
+        toast.error((error.response && error.response.data) ||
+              error.data.message ||
+              error.toString(), {
+            timeout: 2000,
+          });   
+      })
+
       this.submitted = false;
-      this.event = {};
+      this.activity = {};
     },
     // this.$swal
     // eslint-disable-next-line no-unused-vars
     hideModal(e) {
       this.submitted = false;
       this.showModal = false;
-      this.event = {};
+      this.activity = {};
     },
     /**
-     * Edit event modal submit
+     * Edit activity modal submit
      */
     // eslint-disable-next-line no-unused-vars
     editSubmit(e) {
       this.submit = true;
-      if (this.editformvIsvalid) {
-        const editTitle = this.editevent.editTitle;
-        const editcategory = this.editevent.editcategory;
-
-        this.edit.setProp("title", editTitle);
-        this.edit.setProp("classNames", editcategory);
-        this.successmsg();
-        this.eventModal = false;
+      const toast = useToast();
+      const data = {
+        TaskActivityID: this.editactivity.id,
+        TaskID: this.allTasks.filter(t => this.editactivity.editTask.split(',')[0].includes(t.TaskID)).map(t => t.TaskID)[0],
+        Activity: this.editactivity.editActivity,
       }
+
+      this.$store.dispatch('updateTaskActivity', data)
+      .then(response => {
+        this.calendarOptions.events = this.allTaskActivities.map(t => ({id: t.TaskActivityID, task: t.TaskID, title: t.Activity, start: t.Date, className: "bg-primary-500 text-white"}))
+        this.successmsg();
+        this.activityModal = false;
+        toast.success(response.data.message, {
+          timeout: 2000,
+        });    
+      },
+      error => {
+        this.$refs.modal2.closeModal();
+        toast.error((error.response && error.response.data) ||
+              error.data.message ||
+              error.toString(), {
+            timeout: 2000,
+          });   
+      })
     },
 
     /**
-     * Delete event
+     * Delete activity
      */
-    deleteEvent() {
-      this.edit.remove();
-      this.eventModal = false;
+    deleteActivity() {
+      this.$store.dispatch('deleteTaskActivity', {TaskActivityID: this.edit.id})
+      .then(response => {
+        this.calendarOptions.events = this.allTaskActivities.map(t => ({id: t.TaskActivityID, task: t.TaskID, title: t.Activity, start: t.Date, className: "bg-primary-500 text-white"}))
+        this.activityModal = false;
+        toast.success(response.data.message, {
+          timeout: 2000,
+        });    
+      },
+      error => {
+        toast.error((error.response && error.response.data) ||
+              error.message ||
+              error.toString(), {
+            timeout: 2000,
+          });   
+      })
     },
     /**
-     * Modal open for add event
+     * Modal open for add activity
      */
     dateClicked(info) {
-      this.newEventData = info;
+      this.newActivityData = info;
       this.showModal = true;
     },
     /**
-     * Modal open for edit event
+     * Modal open for edit activity
      */
-    editEvent(info) {
+    editActivity(info) {
       this.edit = info.event;
-      this.editevent.editTitle = this.edit.title;
-      this.editevent.editcategory = this.edit.classNames[0];
-      this.eventModal = true;
+      this.editactivity.id = this.edit.id;
+      this.editactivity.editTask = this.allTasks.filter(t => t.TaskID == this.allTaskActivities.filter(a => a.TaskActivityID == this.edit.id).map(a => a.TaskID)[0]).map(s => `ID: ${s.TaskID}, ${s.Description}`)[0] ;
+      this.editactivity.editActivity = this.edit.title;
+      this.editactivity.editcategory = this.edit.classNames[0];
+      this.activityModal = true;
     },
 
     closeModal() {
-      this.eventModal = false;
+      this.activityModal = false;
     },
 
     confirm() {
@@ -288,17 +344,17 @@ export default {
         })
         .then((result) => {
           if (result.value) {
-            this.deleteEvent();
-            this.$swal.fire("Deleted!", "Event has been deleted.", "success");
+            this.deleteActivity();
+            this.$swal.fire("Deleted!", "Activity has been deleted.", "success");
           }
         });
     },
 
     /**
-     * Show list of events
+     * Show list of activities
      */
-    handleEvents(events) {
-      this.currentEvents = events;
+    handleActivities(activities) {
+      this.currentActivities = activities;
     },
 
     /**
@@ -308,13 +364,17 @@ export default {
       this.$swal.fire({
         position: "center",
         icon: "success",
-        title: "Event has been saved",
+        title: "Activity has been saved",
         showConfirmButton: false,
         background: this.$store.state.isDark ? "#1e293b" : "#fff",
         timer: 1000,
       });
     },
   },
+
+  mounted() {
+    this.calendarOptions.events = this.allTaskActivities.map(t => ({id: t.TaskActivityID, task: t.TaskID, title: t.Activity, start: t.Date, className: "bg-primary-500 text-white"}))
+  }
 };
 </script>
 <style lang="scss">
