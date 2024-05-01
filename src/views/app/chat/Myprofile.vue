@@ -8,7 +8,7 @@
             <div class="flex-none">
               <div class="h-10 w-10 rounded-full" @click="toggleuserSetting">
                 <img
-                  src="@/assets/images/users/user-1.jpg"
+                  src="@/assets/images/users/avatar2.png"
                   alt=""
                   class="w-full h-full object-cover rounded-full"
                 />
@@ -17,7 +17,7 @@
             <div class="flex-1 text-start">
               <span
                 class="block text-slate-800 dark:text-slate-300 text-sm font-medium mb-[2px]"
-                >Jane Cooper
+                >{{ currentUser.firstname + " " + currentUser.lastname }}
                 <span
                   class="status bg-success-500 inline-block h-[10px] w-[10px] rounded-full ml-3"
                 ></span>
@@ -30,7 +30,7 @@
           </div>
         </div>
         <div class="flex-none">
-          <Tooltip placement="top" arrow v-if="width > 1024">
+          <!-- <Tooltip placement="top" arrow v-if="width > 1024">
             <template #button>
               <div
                 @click="toggleuserSetting"
@@ -40,7 +40,7 @@
               </div>
             </template>
             <span>Settings</span>
-          </Tooltip>
+          </Tooltip> -->
           <Tooltip placement="top" arrow v-if="width < 1024">
             <template #button>
               <div
@@ -132,7 +132,7 @@ import Icon from "@/components/Icon";
 import Radio from "@/components/Radio";
 import Textarea from "@/components/Textarea";
 import Tooltip from "@/components/Tooltip";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useStore } from "vuex";
 
 // width niye kahini
@@ -140,12 +140,16 @@ const width = ref(0);
 const handleResize = () => {
   width.value = window.innerWidth;
 };
+
 onMounted(() => {
   window.addEventListener("resize", handleResize);
   handleResize();
 });
 const store = useStore();
 // const
+
+const currentUser = computed(() => store.state.auth.user);
+
 const toggleuserSetting = () => {
   store.dispatch("toggleuserSetting");
 };

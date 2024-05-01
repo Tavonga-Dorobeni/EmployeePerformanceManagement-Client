@@ -58,11 +58,11 @@ export const menuItems = [
     roles:["ROLE_APPLICANT", "ROLE_RECRUITER"],
   },
 
-  // {
-  //   title: "Chat",
-  //   icon: "heroicons-outline:chat",
-  //   link: "chat",
-  // },
+  {
+    title: "Chat",
+    icon: "heroicons-outline:chat",
+    link: "chat",
+  },
 
   // {
   //   title: "Email",

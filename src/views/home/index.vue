@@ -361,7 +361,7 @@ export default {
         },
         {
           id: 5,
-          img: require('@/assets/images/users/user-5.jpg'),
+          img: require('@/assets/images/users/avatar.png'),
         },
         {
           id: 6,

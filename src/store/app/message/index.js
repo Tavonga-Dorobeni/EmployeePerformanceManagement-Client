@@ -1,21 +1,21 @@
-import employeeService from "../../../services/employee.service";
+import messageService from "../../../services/message.service";
 
 export default {
   state: {
-    employees: [],
+    messages: [],
   },
 
   //********************************************************************GETTERS*****************************************************************************************
   //********************************************************************************************************************************************************************
 
   getters: {
-    allEmployees: (state) => state.employees,
+    allMessages: (state) => state.messages,
     // unconfirmedDeposits: (state) => {
     //   return [
-    //     state.employees
+    //     state.messages
     //       .filter((t) => t.CheckerID == 0)
     //       .filter((t) => t.TransactionCodeID == 1),
-    //     [(state.employees.title = "Contributions")],
+    //     [(state.messages.title = "Contributions")],
     //   ];
     // },
   },
@@ -24,12 +24,12 @@ export default {
   //********************************************************************************************************************************************************************
 
   actions: {
-    // employees actions
+    // messages actions
 
-    createEmployee({ commit }, data) {
-      return employeeService.create(data).then(
+    createMessage({ commit }, data) {
+      return messageService.create(data).then(
         (response) => {
-          commit("newEmployee", response.data);
+          commit("newMessage", response.data);
           return Promise.resolve(response);
         },
         (error) => {
@@ -37,10 +37,10 @@ export default {
         }
       );
     },
-    getAllEmployees({ commit }) {
-      return employeeService.getAll().then(
+    getAllMessages({ commit }) {
+      return messageService.getAll().then(
         (response) => {
-          commit("setEmployees", response.data);
+          commit("setMessages", response.data);
           return Promise.resolve(response);
         },
         (error) => {
@@ -48,11 +48,10 @@ export default {
         }
       );
     },
-    updateEmployee({ commit }, data) {
-      console.log(data)
-      return employeeService.update(data.EmployeeID, data).then(
+    updateMessage({ commit }, data) {
+      return messageService.update(data.MessageID, data).then(
         (response) => {
-          commit("updEmployee", data);
+          commit("updMessage", data);
           return Promise.resolve(response);
         },
         (error) => {
@@ -60,10 +59,10 @@ export default {
         }
       );
     },
-    deleteEmployee({ commit }, data) {
-      return employeeService.delete(data.EmployeeID).then(
+    deleteMessage({ commit }, data) {
+      return messageService.delete(data.MessageID).then(
         (response) => {
-          commit("dltEmployee", data);
+          commit("dltMessage", data);
           return Promise.resolve(response);
         },
         (error) => {
@@ -76,26 +75,26 @@ export default {
   //********************************************************************MUTATIONS***************************************************************************************
   //********************************************************************************************************************************************************************
   mutations: {
-    // Employee EVENTS
+    // Message EVENTS
 
-    setEmployees: (state, employees) =>
-      (state.employees = employees),
-    newEmployee: (state, newEmployee) =>
-      state.employees.unshift(newEmployee.employee),
-    updEmployee: (state, updatedEmployee) => {
-      const index = state.employees.findIndex(
-        (c) => c.EmployeeID === updatedEmployee.EmployeeID
+    setMessages: (state, messages) =>
+      (state.messages = messages),
+    newMessage: (state, newMessage) =>
+      state.messages.push(newMessage.msg),
+    updMessage: (state, updatedMessage) => {
+      const index = state.messages.findIndex(
+        (c) => c.MessageID === updatedMessage.MessageID
       );
       if (index !== -1) {
-        state.employees.splice(index, 1, updatedEmployee);
+        state.messages.splice(index, 1, updatedMessage);
       }
     },
-    dltEmployee: (state, Employee) => {
-      const index = state.employees.findIndex(
-        (c) => c.EmployeeID === Employee.EmployeeID
+    dltMessage: (state, Message) => {
+      const index = state.messages.findIndex(
+        (c) => c.MessageID === Message.MessageID
       );
       if (index !== -1) {
-        state.employees.splice(index, 1);
+        state.messages.splice(index, 1);
       }
     },
   },

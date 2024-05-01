@@ -3,17 +3,17 @@
     <h4 class="text-xl text-slate-900 font-medium mb-8">About</h4>
     <div class="h-[100px] w-[100px] rounded-full mx-auto mb-4">
       <img
-        :src="user.avatar"
+        src="@/assets/images/users/avatar.png"
         alt=""
         class="block w-full h-full object-cover rounded-full"
       />
     </div>
     <div class="text-center">
       <h5 class="text-base text-slate-600 dark:text-slate-300 font-medium mb-1">
-        {{ user.fullName }}
+        {{ user.firstname + " " + user.lastname }}
       </h5>
       <h6 class="text-xs text-slate-600 dark:text-slate-300 font-normal">
-        {{ user.role }}
+        {{ user.email }}
       </h6>
     </div>
     <ul
@@ -23,28 +23,19 @@
         class="flex justify-between text-sm text-slate-600 dark:text-slate-300 leading-[1]"
       >
         <div class="flex space-x-2 items-start">
-          <Icon icon="heroicons-outline:location-marker" class="text-base" />
-          <span>Location</span>
+          <Icon icon="heroicons-outline:phone" class="text-base" />
+          <span>Phone</span>
         </div>
-        <div class="font-medium">Bangladesh</div>
+        <div class="font-medium">{{user.phone}}</div>
       </li>
       <li
         class="flex justify-between text-sm text-slate-600 dark:text-slate-300 leading-[1]"
       >
         <div class="flex space-x-2 items-start">
           <Icon icon="heroicons-outline:user" class="text-base" />
-          <span>Members since</span>
+          <span>National ID</span>
         </div>
-        <div class="font-medium">Oct 2021</div>
-      </li>
-      <li
-        class="flex justify-between text-sm text-slate-600 dark:text-slate-300 leading-[1]"
-      >
-        <div class="flex space-x-2 items-start">
-          <Icon icon="heroicons-outline:translate" class="text-base" />
-          <span>Language</span>
-        </div>
-        <div class="font-medium">English</div>
+        <div class="font-medium">{{ user.NationalID }}</div>
       </li>
     </ul>
     <ul
@@ -64,7 +55,7 @@
         </router-link>
       </li>
     </ul>
-    <h4 class="py-4 text-sm text-secondary-500 dark:text-slate-300 font-normal">
+    <!-- <h4 class="py-4 text-sm text-secondary-500 dark:text-slate-300 font-normal">
       Shared documents
     </h4>
     <ul class="grid grid-cols-3 gap-2">
@@ -110,7 +101,7 @@
           class="w-full h-full object-cover rounded-[3px]"
         />
       </li>
-    </ul>
+    </ul> -->
   </div>
 </template>
 <script setup>

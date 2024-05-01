@@ -91,6 +91,7 @@ const app = createApp({
         this.$store.dispatch('getAllTasks'),
         this.$store.dispatch('getAllTaskActivities'),
         this.$store.dispatch('getAllusers'),
+        this.$store.dispatch('getAllMessages'),
       ]).finally(() => {
         this.$root.$emit("Initialised")
       })

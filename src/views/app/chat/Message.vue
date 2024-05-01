@@ -13,15 +13,10 @@
             <div class="flex-none">
               <div class="h-10 w-10 rounded-full relative">
                 <span
-                  :class="
-                    store.state.chat.user.status === 'active'
-                      ? 'bg-success-500'
-                      : 'bg-secondary-500'
-                  "
-                  class="status ring-1 ring-white inline-block h-[10px] w-[10px] rounded-full absolute -right-0 top-0"
+                  class="bg-success-500 status ring-1 ring-white inline-block h-[10px] w-[10px] rounded-full absolute -right-0 top-0"
                 ></span>
                 <img
-                  :src="store.state.chat.user.avatar"
+                  src="@/assets/images/users/avatar.png"
                   alt=""
                   class="w-full h-full object-cover rounded-full"
                 />
@@ -30,7 +25,7 @@
             <div class="flex-1 text-start">
               <span
                 class="block text-slate-800 dark:text-slate-300 text-sm font-medium mb-[2px] truncate"
-                >{{ store.state.chat.user.fullName }}
+                >{{ user.firstname + " " + user.lastname}}
               </span>
               <span
                 class="block text-slate-500 dark:text-slate-300 text-xs font-normal"
@@ -40,12 +35,12 @@
           </div>
         </div>
         <div class="flex-none flex md:space-x-3 space-x-1 items-center">
-          <div class="msg-action-btn">
+          <!-- <div class="msg-action-btn">
             <Icon icon="heroicons-outline:phone" />
           </div>
           <div class="msg-action-btn">
             <Icon icon="heroicons-outline:video-camera" />
-          </div>
+          </div> -->
 
           <div @click="openinfo" class="msg-action-btn">
             <Icon icon="heroicons-outline:dots-horizontal" />
@@ -58,15 +53,15 @@
         class="msgs overflow-y-auto msg-height pt-6 space-y-6"
         ref="chatheight"
       >
-        <div class="block md:px-6 px-4" v-for="(item, i) in getChats" :key="i">
+        <div class="block md:px-6 px-4" v-for="(item, i) in messages.filter(m => (m.SenderID == currentUser.id || m.SenderID == user.id) && (m.ReceiverID == user.id || m.ReceiverID == currentUser.id))" :key="i">
           <div
             class="flex space-x-2 items-start group"
-            v-if="item.sender === 'them'"
+            v-if="item.SenderID == user.id"
           >
             <div class="flex-none">
               <div class="h-8 w-8 rounded-full">
                 <img
-                  :src="item.img"
+                  src="@/assets/images/users/avatar.png"
                   alt=""
                   class="block w-full h-full object-cover rounded-full"
                 />
@@ -77,12 +72,12 @@
                 <div
                   class="text-contrent p-3 bg-slate-100 dark:bg-slate-600 dark:text-slate-300 text-slate-600 text-sm font-normal mb-1 rounded-md flex-1 whitespace-pre-wrap break-all"
                 >
-                  {{ item.content }}
+                  {{ item.Message }}
                 </div>
-                <span
+                <!-- <span
                   class="font-normal text-xs text-slate-400 dark:text-slate-400"
                   >12:20 pm</span
-                >
+                > -->
               </div>
               <div
                 class="opacity-0 invisible group-hover:opacity-100 group-hover:visible"
@@ -100,7 +95,7 @@
           <!-- sender -->
           <div
             class="flex space-x-2 items-start justify-end group w-full"
-            v-if="item.sender === 'me'"
+            v-if="item.SenderID == currentUser.id"
           >
             <div class="no flex space-x-4">
               <div
@@ -122,17 +117,17 @@
                 <div
                   class="text-contrent p-3 bg-slate-300 dark:bg-slate-900 dark:text-slate-300 text-slate-800 text-sm font-normal rounded-md flex-1 mb-1"
                 >
-                  {{ item.content }}
+                  {{ item.Message }}
                 </div>
-                <span class="font-normal text-xs text-slate-400">{{
+                <!-- <span class="font-normal text-xs text-slate-400">{{
                   time
-                }}</span>
+                }}</span> -->
               </div>
             </div>
             <div class="flex-none">
               <div class="h-8 w-8 rounded-full">
                 <img
-                  :src="store.state.chat.user.avatar"
+                  src="@/assets/images/users/avatar.png"
                   alt=""
                   class="block w-full h-full object-cover rounded-full"
                 />
@@ -190,6 +185,7 @@ import Dropdown from "@/components/Dropdown";
 import Icon from "@/components/Icon";
 import { computed, ref, onMounted } from "vue";
 import { useStore } from "vuex";
+import { useToast } from "vue-toastification";
 
 // width niye kahini
 const width = ref(0);
@@ -203,6 +199,9 @@ onMounted(() => {
 const newMessage = ref("");
 const store = useStore();
 const getChats = computed(() => store.getters.getMessFeed);
+const user = computed(() => store.getters.getUser);
+const messages = computed(() => store.getters.allMessages);
+const currentUser = computed(() => store.state.auth.user);
 const chatheight = ref(null);
 const scrollToBottom = () => {
   setTimeout(() => {
@@ -212,12 +211,29 @@ const scrollToBottom = () => {
 };
 const sendMessage = () => {
   // if newMessge empty return
+  const toast = useToast();
   if (newMessage.value) {
-    store.dispatch("sendMessage", {
-      content: newMessage.value,
-      sender: "me",
-      img: require("@/assets/images/users/user-1.jpg"),
-    });
+    const data = {
+      SenderID: store.state.auth.user.id,
+      ReceiverID: store.getters.getUser.id,
+      Message: newMessage.value
+    }
+
+    store.dispatch("createMessage", data)
+    .then(data =>{
+      // use vue-toast-notification app use
+      toast.success(data.data.message, {
+          timeout: 2000,
+        });          
+    },
+    error => {
+      toast.error((error.response && error.response.data) ||
+            error.data.message ||
+            error.toString(), {
+          timeout: 2000,
+        });   
+      console.log((error.response && error.response.data) || error.data.message || error.toString())
+    })
   }
   newMessage.value = "";
   scrollToBottom();
