@@ -4,8 +4,7 @@
     :zoom="zoom"
     maxZoom="18"
     :center="[
-      position?.lat || userLocation.lat || defaultLocation.lat,
-      position?.lng || userLocation.lng || defaultLocation.lng
+      defaultLocation.lat, defaultLocation.lng
     ]"
   >
     <l-tile-layer

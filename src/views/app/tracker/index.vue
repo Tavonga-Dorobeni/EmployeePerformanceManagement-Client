@@ -10,7 +10,7 @@
 
         </div>
 
-        <div class="h-[450px] w-full">
+        <div class="h-[750px] w-full">
             <Map />
         </div>
 
